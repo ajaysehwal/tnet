@@ -1,0 +1,37 @@
+// schema.prisma
+
+datasource db {
+  provider = "postgresql" // Change this to your database provider (e.g., mysql, sqlite, etc.)
+  url      = env("DATABASE_URL") // The database connection URL
+}
+
+generator client {
+  provider = "prisma-client-js" // Generates the Prisma client
+}
+
+model User {
+  id       String   @id @default(cuid()) 
+  name     String?  
+  email    String?   @unique
+  tasks    Task[]  
+}
+
+model Task {
+  id          String   @id @default(cuid()) // Unique identifier for the task
+  title       String   // Title of the task
+  description String?  // Optional description of the task
+  status      Status   @default(PENDING) // Status of the task, default is PENDING
+  dueDate     String? // Optional due date for the task
+  assignedTo  String
+  createdAt   DateTime @default(now()) // Timestamp when the task was created
+  updatedAt   DateTime @updatedAt // Timestamp when the task was last updated
+  userId      String
+  user        User    @relation(fields: [userId], references: [id]) // Relation to the User model
+}
+
+enum Status {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  CANCELED
+}
